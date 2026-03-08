@@ -37,7 +37,8 @@
 		"LABEL": "user@example.com",
 		"ALGORITHM": "SHA1",
 		"DIGITS": "6",
-		"PERIOD": "30"
+		"PERIOD": "30",
+		"SIMPLE": "false"
 	},
 	/**
 	 * Service Bindings (communicate between multiple Workers)

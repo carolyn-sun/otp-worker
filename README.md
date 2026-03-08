@@ -29,9 +29,12 @@ Edit `wrangler.jsonc` to set your desired metadata:
   "LABEL": "[EMAIL_ADDRESS]",
   "ALGORITHM": "SHA1",
   "DIGITS": "6",
-  "PERIOD": "30"
+  "PERIOD": "30",
+  "SIMPLE": "false"
 }
 ```
+
+- **SIMPLE**: Set to `"true"` to enable a minimalist, high-contrast interface. When enabled, it hides all metadata (Issuer/Label) and displays only the OTP code and a progress bar. Defaults to `"false"`.
 
 ### 3. Deploy
 

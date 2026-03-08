@@ -7,6 +7,7 @@ export interface Env {
 	ALGORITHM: 'SHA1' | 'SHA256' | 'SHA512';
 	DIGITS: string;
 	PERIOD: string;
+	SIMPLE: string;
 }
 
 export default {
@@ -14,10 +15,11 @@ export default {
 		const {
 			STRINGBASE,
 			ISSUER = 'OTP Worker',
-			LABEL = 'user@example.com',
+			LABEL = 'user@localhost',
 			ALGORITHM = 'SHA1',
 			DIGITS = '6',
 			PERIOD = '30',
+			SIMPLE = 'false',
 		} = env;
 
 		if (!STRINGBASE) {
@@ -39,7 +41,7 @@ export default {
 			const token = totp.generate();
 			const seconds = totp.period - (Math.floor(Date.now() / 1000) % totp.period);
 
-			return new Response(renderOTP(token, seconds, totp), {
+			return new Response(renderOTP(token, seconds, totp, SIMPLE === 'true'), {
 				headers: { 'Content-Type': 'text/html' },
 			});
 		} catch (error) {
@@ -50,12 +52,62 @@ export default {
 	},
 };
 
-function renderOTP(token: string, seconds: number, totp: OTPAuth.TOTP) {
+function renderOTP(token: string, seconds: number, totp: OTPAuth.TOTP, simple: boolean) {
 	const progress = (seconds / totp.period) * 100;
 
 	// Create columns of digits for a nice display
 	const digits = token.split('');
 	const display = digits.map(d => `<span class="digit">${d}</span>`).join('');
+
+	if (simple) {
+		return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Code</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #ffffff; color: #000; }
+        .code { font-size: 5rem; font-weight: bold; letter-spacing: 0.2rem; margin-bottom: 2rem; cursor: pointer; }
+        .progress-container { width: 300px; height: 4px; background: #f0f0f0; margin-bottom: 2rem; border-radius: 2px; overflow: hidden; }
+        .progress-bar { height: 100%; background: #000; width: ${progress}%; transition: width 1s linear; }
+        .btn-copy { padding: 10px 20px; font-size: 1rem; cursor: pointer; border: 1px solid #ccc; background: #f8f9fa; border-radius: 4px; }
+        .btn-copy:active { background: #e2e6ea; }
+    </style>
+</head>
+<body>
+    <div class="code" id="code" onclick="copyCode()">${token}</div>
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <button class="btn-copy" id="copy-btn" onclick="copyCode()">Copy Code</button>
+
+    <script>
+        let timeLeft = ${seconds};
+        const period = ${totp.period};
+        const progressBar = document.getElementById('progress-bar');
+        const btn = document.getElementById('copy-btn');
+
+        setInterval(() => {
+            if (timeLeft <= 0) { window.location.reload(); return; }
+            timeLeft--;
+            const newProgress = (timeLeft / period) * 100;
+            progressBar.style.width = newProgress + '%';
+        }, 1000);
+
+        function copyCode() {
+            const token = '${token}';
+            navigator.clipboard.writeText(token).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied';
+                setTimeout(() => { btn.innerText = originalText; }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>`;
+	}
 
 	return `
 <!DOCTYPE html>
@@ -309,7 +361,7 @@ function renderOTP(token: string, seconds: number, totp: OTPAuth.TOTP) {
             navigator.clipboard.writeText(code).then(() => {
                 const btn = document.querySelector('.btn-copy');
                 const originalText = btn.innerText;
-                btn.innerText = 'Copied!';
+                btn.innerText = 'Copied';
                 btn.style.borderColor = '#10b981';
                 btn.style.color = '#10b981';
                 setTimeout(() => {
