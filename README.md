@@ -64,3 +64,5 @@ npm run deploy
 ### Disclaimer
 
 This software is provided "as is", without warranty of any kind, express or implied. Use at your own risk. The authors and contributors are not responsible for any security breaches or data loss resulting from the use of this worker.
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fcarolyn-sun%2Fotp-worker)
