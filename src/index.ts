@@ -68,7 +68,7 @@ function renderOTP(token: string, seconds: number, totp: OTPAuth.TOTP, simple: b
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OTP Code</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #ffffff; color: #000; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; padding: 2rem; min-height: 100vh; margin: 0; background: #ffffff; color: #000; }
         .code { font-size: 5rem; font-weight: bold; letter-spacing: 0.2rem; margin-bottom: 2rem; cursor: pointer; }
         .progress-container { width: 300px; height: 4px; background: #f0f0f0; margin-bottom: 2rem; border-radius: 2px; overflow: hidden; }
         .progress-bar { height: 100%; background: #000; width: ${progress}%; transition: width 1s linear; }
