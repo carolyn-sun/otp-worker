@@ -39,8 +39,8 @@ Returns the current OTP code.
 npx wrangler secret put STRINGBASE
 ```
 
-```json
-// edit wrangler.toml
+```jsonc
+// edit wrangler.jsonc
 "vars": {
   "ALGORITHM": "SHA1",
   "DIGITS": "6",
