@@ -33,12 +33,9 @@
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
 	"vars": {
-		"ISSUER": "OTP Worker",
-		"LABEL": "user@example.com",
 		"ALGORITHM": "SHA1",
 		"DIGITS": "6",
-		"PERIOD": "30",
-		"SIMPLE": "false"
+		"PERIOD": "30"
 	},
 	/**
 	 * Service Bindings (communicate between multiple Workers)

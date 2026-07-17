@@ -1,68 +1,65 @@
 # OTP Worker
 
-A beautiful, configurable OTP (TOTP) authenticator built with Cloudflare Workers.
+A lightweight OTP (TOTP) API built with Cloudflare Workers. Returns verification codes as JSON.
 
-## Features
+## API Reference
 
-- **Secure**: Sensitive OTP secrets are stored in Cloudflare Secrets.
-- **Configurable**: Metadata like Issuer and Label are stored in Environment Variables.
-- **Responsive & Premium UI**: A sleek, animated, and dark-themed UI for displaying your OTP code.
-- **Micro-animations**: Progress bars and copy-to-clipboard feedback.
+### GET /
 
-## Setup
+Returns the current OTP code.
 
-### 1. Set your Secret
-
-The OTP secret (Base32 format) MUST be stored as a Cloudflare Secret named `STRINGBASE`.
-
-```bash
-npx wrangler secret put STRINGBASE
-```
-
-### 2. Configure Environment Variables
-
-Edit `wrangler.jsonc` to set your desired metadata:
+**Response:**
 
 ```json
-"vars": {
-  "ISSUER": "Demo",
-  "LABEL": "[EMAIL_ADDRESS]",
-  "ALGORITHM": "SHA1",
-  "DIGITS": "6",
-  "PERIOD": "30",
-  "SIMPLE": "false"
+{
+	"code": "123456",
+	"expires_in": 25,
+	"period": 30
 }
 ```
 
-- **SIMPLE**: Set to `"true"` to enable a minimalist, high-contrast interface. When enabled, it hides all metadata (Issuer/Label) and displays only the OTP code and a progress bar. Defaults to `"false"`.
+| Field        | Type   | Description              |
+| ------------ | ------ | ------------------------ |
+| `code`       | string | Current TOTP code        |
+| `expires_in` | number | Seconds until expiration |
+| `period`     | number | TOTP period in seconds   |
 
-### 3. Deploy
+**Error Response (500):**
 
-```bash
-npm run deploy
+```json
+{
+	"error": "Error message"
+}
 ```
 
-## Local Development
+## Setup
 
-1. Create a `.dev.vars` file (already initialized with a dummy secret).
-2. Run `npm run dev`.
-3. Open `http://localhost:8787` in your browser.
+```bash
+# Set secret
+npx wrangler secret put STRINGBASE
+```
 
-## Tech Stack
+```json
+// edit wrangler.toml
+"vars": {
+  "ALGORITHM": "SHA1",
+  "DIGITS": "6",
+  "PERIOD": "30"
+}
+```
 
-- **Cloudflare Workers**: High-performance edge computing.
-- **otpauth**: Modern OTP generation library.
-- **Vanilla CSS**: Premium dark-themed UI with glassmorphism.
-- **TypeScript**: Type-safe development.
+```bash
+# Deploy
+npm run deploy
+```
 
 ## ⚠️ Security & Disclaimer
 
 ### Security Warning
 
 - **Confidentiality**: The `STRINGBASE` secret is the master key to your OTPs. Never commit it to version control or share it.
-- **Worker Exposure**: By default, this worker serves your OTP code at its assigned URL. Ensure the URL is kept private or protected by [Cloudflare Access](https://www.cloudflare.com/products/zero-trust/access/) if you require authentication to view the code.
-- **Public Domain Deployment**: If deployed on a public domain, while the security risk is minimal if account descriptors or unique identifiers are not exposed, sharing this page is still not recommended. Using Cloudflare Access to restrict access is highly encouraged.
-- **Browser History**: Viewing this page may store the OTP code or the page in your browser's cache/history. Use Incognito/Private mode if on a shared device.
+- **Worker Exposure**: By default, this worker serves your OTP code at its assigned URL. Ensure the URL is kept private or protected by [Cloudflare Access](https://www.cloudflare.com/products/zero-trust/access/).
+- **Access Control**: Since the API returns OTP codes directly, restricting access via Cloudflare Access is strongly recommended for production deployments.
 
 ### Disclaimer
 
